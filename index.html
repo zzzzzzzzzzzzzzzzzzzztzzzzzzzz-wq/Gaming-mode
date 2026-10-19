@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>My Console</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- الشريط العلوي -->
+<div class="top-bar">
+  <span>🎮 My Console</span>
+  <span id="clock">00:00</span>
+</div>
+
+<!-- التبويبات -->
+<div class="tabs">
+  <div class="tab">📡 Streaming</div>
+  <div class="tab active">🎮 Games</div>
+  <div class="tab">📱 Apps</div>
+  <div class="tab">🕹️ Emulators</div>
+</div>
+
+<!-- المحتوى الرئيسي -->
+<div class="main">
+  <!-- الشريط الجانبي -->
+  <div class="sidebar">
+    <div class="side-icon active" onclick="showAllGames()">🕐</div>
+    <div class="side-icon" onclick="showFavorites()">⭐</div>
+    <div class="side-icon" onclick="showRecent()">🔥</div>
+    <div class="side-icon" onclick="showFolders()">📁</div>
+    <div class="side-icon" onclick="showAllGames()">🎮</div>
+    <div class="side-icon" onclick="openAddGame()">➕</div>
+    <div class="side-icon" onclick="openTheme()">⚙️</div>
+  </div>
+
+  <!-- منطقة الألعاب -->
+  <div class="content">
+    <div class="bg-lines"></div>
+    <div class="games-scroll" id="gamesList"></div>
+    <div class="game-info">
+      <div class="game-title" id="gTitle">اختر لعبة</div>
+      <div class="game-meta" id="gMeta">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- الشريط السفلي -->
+<div class="bottom-bar">
+  <div class="btn-hint"><span class="btn-key">START</span> تشغيل</div>
+  <div class="btn-hint"><span class="btn-key">➕</span> إضافة</div>
+  <div class="btn-hint"><span class="btn-key">⚙️</span> إعدادات</div>
+  <div class="btn-hint"><span class="btn-key">L1</span> السابق</div>
+  <div class="btn-hint"><span class="btn-key">R1</span> التالي</div>
+</div>
+
+<!-- ===== نافذة إضافة لعبة ===== -->
+<div class="modal" id="addGameModal">
+  <div class="modal-box">
+    <h3>➕ إضافة لعبة</h3>
+    
+    <div style="display:flex;gap:10px;margin-bottom:15px">
+      <button class="modal-btn secondary" onclick="showPhoneApps()" style="flex:1">📱 من الهاتف</button>
+      <button class="modal-btn secondary" onclick="showManualAdd()" style="flex:1">✍️ يدوي</button>
+    </div>
+
+    <!-- إضافة يدوية -->
+    <div id="manualAdd">
+      <input type="text" id="gameName" placeholder="اسم اللعبة" maxlength="30">
+      <input type="text" id="gameYear" placeholder="السنة" value="2024" maxlength="4">
+      
+      <div style="font-size:12px;color:#aaa;margin:10px 0">اختر أيقونة:</div>
+      <div class="emoji-picker" id="emojiPicker"></div>
+      
+      <input type="text" id="gameUrl" placeholder="رابط اللعبة (اختياري)">
+      <textarea id="gameDesc" placeholder="وصف اللعبة (اختياري)" style="width:100%;padding:8px;margin:8px 0;background:#2a2a2a;border:1px solid #444;border-radius:5px;color:white;resize:vertical;height:60px"></textarea>
+      
+      <button class="modal-btn primary" onclick="addManualGame()" style="margin-top:10px">✓ إضافة</button>
+    </div>
+
+    <!-- قائمة تطبيقات الهاتف -->
+    <div id="phoneApps" style="display:none">
+      <div style="font-size:12px;color:#aaa;margin-bottom:10px">اختر تطبيق من هاتفك:</div>
+      <input type="text" id="appSearch" placeholder="ابحث عن تطبيق..." style="margin-bottom:10px;width:100%;padding:8px;background:#2a2a2a;border:1px solid #444;border-radius:5px;color:white">
+      <div class="app-list" id="appList"></div>
+    </div>
+
+    <button class="modal-btn secondary" onclick="closeAddGame()" style="margin-top:10px">✕ إلغاء</button>
+  </div>
+</div>
+
+<!-- ===== نافذة الثيم ===== -->
+<div class="modal" id="themeModal">
+  <div class="modal-box">
+    <h3>🎨 تخصيص الواجهة</h3>
+    
+    <div style="margin:10px 0">
+      <label style="font-size:12px;display:block;margin-bottom:5px">اللون الأساسي</label>
+      <input type="color" id="cPrimary" value="#ff6a00" style="width:100%;height:40px;cursor:pointer">
+    </div>
+    <div style="margin:10px 0">
+      <label style="font-size:12px;display:block;margin-bottom:5px">لون الخلفية</label>
+      <input type="color" id="cBg" value="#0a0a0a" style="width:100%;height:40px;cursor:pointer">
+    </div>
+    <div style="margin:10px 0">
+      <label style="font-size:12px;display:block;margin-bottom:5px">لون النص</label>
+      <input type="color" id="cText" value="#ffffff" style="width:100%;height:40px;cursor:pointer">
+    </div>
+    <div style="margin:10px 0">
+      <label style="font-size:12px;display:block;margin-bottom:5px">لون التمييز</label>
+      <input type="color" id="cAccent" value="#ffcc00" style="width:100%;height:40px;cursor:pointer">
+    </div>
+    
+    <div style="font-size:12px;margin-top:15px;color:#aaa">ثيمات جاهزة:</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px">
+      <div style="height:40px;border-radius:8px;background:linear-gradient(135deg,#ff6a00,#ff9a3c);cursor:pointer" onclick="applyPreset('#ff6a00','#0a0a0a','#fff','#ffcc00')"></div>
+      <div style="height:40px;border-radius:8px;background:linear-gradient(135deg,#0066ff,#00ccff);cursor:pointer" onclick="applyPreset('#0066ff','#0a0a1a','#fff','#00ccff')"></div>
+      <div style="height:40px;border-radius:8px;background:linear-gradient(135deg,#ff0066,#ff66b2);cursor:pointer" onclick="applyPreset('#ff0066','#1a0a14','#fff','#ff66b2')"></div>
+      <div style="height:40px;border-radius:8px;background:linear-gradient(135deg,#00cc66,#66ff99);cursor:pointer" onclick="applyPreset('#00cc66','#0a1a0f','#fff','#66ff99')"></div>
+      <div style="height:40px;border-radius:8px;background:linear-gradient(135deg,#9d00ff,#cc66ff);cursor:pointer" onclick="applyPreset('#9d00ff','#0f0a1a','#fff','#cc66ff')"></div>
+      <div style="height:40px;border-radius:8px;background:linear-gradient(135deg,#ff3300,#ff9900);cursor:pointer" onclick="applyPreset('#ff3300','#1a0a05','#fff','#ff9900')"></div>
+      <div style="height:40px;border-radius:8px;background:linear-gradient(135deg,#003366,#0066cc);cursor:pointer" onclick="applyPreset('#0066cc','#050a14','#fff','#0099ff')"></div>
+      <div style="height:40px;border-radius:8px;background:linear-gradient(135deg,#333,#999);cursor:pointer" onclick="applyPreset('#666','#111','#fff','#ccc')"></div>
+    </div>
+    
+    <button class="modal-btn primary" onclick="closeTheme()" style="margin-top:15px">✓ حفظ</button>
+  </div>
+</div>
+
+<!-- ===== نافذة اللعبة ===== -->
+<div class="game-screen" id="gameScreen">
+  <div class="game-header">
+    <span id="runningGame">—</span>
+    <button onclick="closeGame()" style="background:#ff3333;border:none;color:white;padding:8px 15px;border-radius:5px;cursor:pointer;font-weight:bold">✕ إغلاق</button>
+  </div>
+  <iframe id="gameFrame" class="game-frame" style="border:none;background:#000"></iframe>
+  <div class="game-controls">
+    <button class="ctrl-btn">▲</button>
+    <button class="ctrl-btn">▼</button>
+    <button class="ctrl-btn">◀</button>
+    <button class="ctrl-btn">▶</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
